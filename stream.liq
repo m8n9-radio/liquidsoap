@@ -66,11 +66,8 @@ def get_discogs_cover(artist, title, album) =
       log("Discogs: Using cached cover for #{artist} - #{title}")
       cached
     else
-      query = if album != "" then
-        "artist:#{artist} release_title:#{album}"
-      else
-        "artist:#{artist} track:#{title}"
-      end
+      # Try simple query first - works better than strict field matching
+      query = "#{artist} #{title}"
 
       encoded = url.encode(query)
       api_url = "https://api.discogs.com/database/search?q=#{encoded}&type=release&per_page=1&token=#{discogs_token}"
@@ -96,7 +93,7 @@ def get_discogs_cover(artist, title, album) =
           if cache_size mod 100 == 0 and cache_size > 0 then
             log("Discogs: Cache stats - #{cache_size} entries")
           end
-          
+
           cover
         else
           log("Discogs: No cover found for #{artist} - #{title}")
@@ -150,9 +147,11 @@ def process_metadata(m) =
     radio_url
   end
 
+  log("Metadata: title=#{stream_title}, url=#{stream_url}")
+
   [
-    ("StreamTitle", stream_title),
-    ("StreamUrl", stream_url)
+    ("title", stream_title),
+    ("url", stream_url)
   ]
 end
 
@@ -233,6 +232,22 @@ def get_encoder() =
   end
 end
 
+# Send url metadata manually to Icecast-KH
+def send_url_metadata(m) =
+  cover_url = m["url"] ?? ""
+  if cover_url != "" and cover_url != radio_url then
+    log("Sending StreamUrl to Icecast: #{cover_url}")
+    icy.update_metadata(
+      host=icecast_host,
+      port=icecast_port,
+      password=icecast_password,
+      mount="/#{icecast_mount}",
+      [("url", cover_url)]
+    )
+  end
+end
+
+# Output to Icecast-KH
 output.icecast(
   get_encoder(),
   host=icecast_host,
@@ -244,8 +259,12 @@ output.icecast(
   genre=radio_genre,
   url=radio_url,
   public=true,
+  send_icy_metadata=true,
   radio
 )
+
+# Register callback to send url after each metadata change
+radio.on_metadata(send_url_metadata)
 
 log("Stream started successfully!")
 log("Icecast: http://#{icecast_host}:#{icecast_port}/#{icecast_mount}")
