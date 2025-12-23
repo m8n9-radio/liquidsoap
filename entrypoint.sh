@@ -6,7 +6,7 @@ set -e
 # ========================================
 
 # Icecast Server Configuration
-export ICECAST_HOST=${ICECAST_HOST:-icecast}
+export ICECAST_HOST=${ICECAST_HOST:-localhost}
 export ICECAST_PORT=${ICECAST_PORT:-8000}
 export ICECAST_PASSWORD=${ICECAST_PASSWORD:-hackme}
 export ICECAST_MOUNT=${ICECAST_MOUNT:-stream}
@@ -18,17 +18,17 @@ export RADIO_GENRE=${RADIO_GENRE:-Various}
 export RADIO_URL=${RADIO_URL:-http://localhost:8000}
 
 # Harbor (Live Input) Configuration
-export HARBOR_ENABLED=${HARBOR_ENABLED:-true}
+export HARBOR_ENABLED=${HARBOR_ENABLED:-false}
 export HARBOR_PORT=${HARBOR_PORT:-8001}
 export HARBOR_PASSWORD=${HARBOR_PASSWORD:-hackme}
 export HARBOR_USER=${HARBOR_USER:-source}
 
 # Telnet Server Configuration
-export TELNET_ENABLED=${TELNET_ENABLED:-true}
+export TELNET_ENABLED=${TELNET_ENABLED:-false}
 export TELNET_PORT=${TELNET_PORT:-1234}
 
 # Logging Configuration
-export LOG_LEVEL=${LOG_LEVEL:-4}
+export LOG_LEVEL=${LOG_LEVEL:-1}
 
 # Discogs API Configuration
 export DISCOGS_ENABLED=${DISCOGS_ENABLED:-false}
