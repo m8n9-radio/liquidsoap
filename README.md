@@ -38,6 +38,17 @@ cp .env.dist .env
 
 ### 2. Editează variabilele în `.env`
 
+#### Radio Station Information
+
+**IMPORTANT:** Aceste informații sunt transmise către Icecast și procesate de frontend pentru afișarea metadatelor stației radio:
+
+- `RADIO_NAME` - Numele stației (afișat în player când nu rulează track)
+- `RADIO_DESCRIPTION` - Descrierea stației (metadata Icecast)
+- `RADIO_GENRE` - Genul muzical (metadata Icecast)
+- `RADIO_URL` - URL-ul stației (folosit ca fallback pentru StreamUrl când nu există cover)
+
+Frontend-ul folosește aceste date pentru a afișa informații despre stație în interfață.
+
 ```bash
 # Icecast Server
 ICECAST_HOST=icecast
@@ -45,11 +56,12 @@ ICECAST_PORT=8000
 ICECAST_PASSWORD=source_secret
 ICECAST_MOUNT=stream
 
-# Radio Station
-RADIO_NAME=My Radio
-RADIO_DESCRIPTION=Best Radio Ever
+# Radio Station Information
+# Aceste date sunt transmise în Icecast și procesate de frontend
+RADIO_NAME=Radio Dream
+RADIO_DESCRIPTION=Radio Dream Stream
 RADIO_GENRE=Various
-RADIO_URL=http://myradio.com
+RADIO_URL=http://10.1.100.20:8000/stream
 
 # Stream Format
 STREAM_FORMAT=mp3

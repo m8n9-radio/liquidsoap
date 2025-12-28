@@ -150,6 +150,7 @@ def process_metadata(m) =
   title = m["title"] ?? ""
   album = m["album"] ?? ""
   filename = m["filename"] ?? "Unknown"
+  is_jingle = m["is_jingle"] ?? "false"
 
   if artist == "" or title == "" then
     log("WARNING: Missing metadata")
@@ -175,8 +176,16 @@ def process_metadata(m) =
     ""
   end
 
-  # Send track data to backend (with md5sum, cover)
-  send_to_backend(artist, title, cover, md5sum)
+  # Send track data to backend (with md5sum, cover) - exclude jingles and tracks without metadata
+  if is_jingle != "true" and artist != "" and title != "" then
+    send_to_backend(artist, title, cover, md5sum)
+  else
+    if is_jingle == "true" then
+      log("Jingle detected - skipping backend transmission")
+    else
+      log("Missing metadata - skipping backend transmission")
+    end
+  end
 
   # Build stream_title with md5sum for Icecast
   base_title = if artist != "" and title != "" then
@@ -224,7 +233,7 @@ jingles = blank.skip(max_blank=5.0, min_noise=0.01, jingles)
 jingles = normalize(jingles)
 jingles = compress(jingles)
 jingles = metadata.map(update=false, fun(_) -> begin
-  [("title", "Jingle - Thanks for listening"), ("artist", "")]
+  [("title", "Jingle - Thanks for listening"), ("artist", ""), ("is_jingle", "true")]
 end, jingles)
 
 music = rotate(
